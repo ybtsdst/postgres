@@ -1,0 +1,13 @@
+services:
+  pg_runtime_service:
+    container_name: pg_runtime
+    privileged: true
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp=unconfined
+    volumes:
+      - ..:/var/lib/postgresql/data
+    network_mode: host
+    tty: true
+    stdin_open: true

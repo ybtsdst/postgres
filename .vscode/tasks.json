@@ -1,0 +1,150 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "process",
+            "label": "configure",
+            "command": "/opt/transwarp/postgresql/configure",
+            "args": [
+                "--prefix=${env:PG_HOME}",
+                "--with-tcl",
+                "--with-perl",
+                "--with-python",
+                "--with-pam",
+                "--with-openssl",
+                "--with-libxml",
+                "--with-libxslt",
+                "--enable-nls",
+                "--enable-thread-safety",
+                "--enable-debug",
+                "--disable-rpath",
+                "--with-uuid=e2fs",
+                "--with-gnu-ld",
+                "--with-gssapi",
+                "--with-ldap",
+                "--with-system-tzdata=/usr/share/zoneinfo",
+                "--enable-tap-tests",
+                "--with-icu",
+                // "--with-llvm LLVM_CONFIG=/usr/bin/llvm-config-15 CLANG=/usr/bin/clang-15",
+                "--with-llvm",
+                "--with-lz4",
+                "--with-zstd",
+                "--with-libcurl",
+                // "--with-libnuma LIBNUMA_CFLAGS=\"\" LIBNUMA_LIBS=-lnuma",
+                "--with-libnuma",
+                "--with-liburing",
+                "--with-systemd",
+                "--with-selinux",
+                "--enable-dtrace",
+            ],
+            "options": {
+                "cwd": "/opt/transwarp/postgresql/build",
+                "env": {
+                    "CC": "/usr/lib/ccache/cc",
+                    "CXX": "/usr/lib/ccache/c++",
+                    "CFLAGS": "-fno-omit-frame-pointer",
+                    "LLVM_CONFIG": "/usr/bin/llvm-config-15",
+                    "CLANG": "/usr/bin/clang-15",
+                    "LIBNUMA_CFLAGS": "",
+                    "LIBNUMA_LIBS": "-lnuma"
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+        },
+        {
+            "type": "process",
+            "label": "make",
+            "command": "bear",
+            "args": [
+                "--",
+                "make",
+                "world-bin",
+                "-j${env:BUILD_PROC}"
+            ],
+            "options": {
+                "cwd": "/opt/transwarp/postgresql/build",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "clean runtime files",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "/opt/transwarp/postgresql/.devcontainer/ci-transwarp/output",
+            ],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "prepare runtime image",
+            "command": "cp",
+            "args": [
+                "-r",
+                "${env:PG_HOME}/",
+                "/opt/transwarp/postgresql/.devcontainer/ci-transwarp/output"
+            ],
+            "problemMatcher": [],
+            "dependsOn": [
+                "clean runtime files"
+            ]
+        },
+        {
+            "type": "process",
+            "label": "make install",
+            "command": "make",
+            "args": [
+                "install-world-bin"
+            ],
+            "options": {
+                "cwd": "/opt/transwarp/postgresql/build",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+        },
+        {
+            "type": "process",
+            "label": "make distclean",
+            "command": "make",
+            "args": [
+                "distclean"
+            ],
+            "options": {
+                "cwd": "/opt/transwarp/postgresql/build",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+        },
+        {
+            "type": "process",
+            "label": "make clean",
+            "command": "make",
+            "args": [
+                "clean"
+            ],
+            "options": {
+                "cwd": "/opt/transwarp/postgresql/build",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+        }
+    ]
+}
